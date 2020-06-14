@@ -10,3 +10,11 @@ body {
   border-radius: 4px;
   color: #fff;
 }
+
+canvas {
+  /* height: 92vh; */
+  /* width: 98vw; */
+  border: black 1px solid;
+  display: block;
+  margin-top: 8px;
+}
