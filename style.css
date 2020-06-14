@@ -1,0 +1,12 @@
+body {
+  background-color: linen;
+  font-family: roboto, sans-serif;
+}
+
+.button {
+  display: inline-block;
+  padding: 8px;
+  background-color: steelblue;
+  border-radius: 4px;
+  color: #fff;
+}
