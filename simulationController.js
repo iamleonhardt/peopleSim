@@ -3,8 +3,14 @@ let currentPeopleArr = [];
 
 canvas = document.getElementById("canvas");
 c = canvas.getContext("2d");
-canvas.width = window.innerWidth - 20;
+canvas.width = window.innerWidth - 520;
 canvas.height = window.innerHeight - 70;
+
+let requestAnimationFrame =
+  window.requestAnimationFrame ||
+  window.mozRequestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||
+  window.msRequestAnimationFrame;
 
 let createPeople = (numberOfPeople) => {
   for (i = 0; i < numberOfPeople; i++) {
@@ -39,7 +45,7 @@ let drawDistance = (person1, person2, distance) => {
   c.lineTo(person2.x, person2.y);
   c.stroke();
   c.font = "10px Arial";
-  c.fillStyle = "lightgrey";
+  c.fillStyle = "darkgrey";
   c.fillText(
     distance,
     (person1.x + person2.x) / 2,
@@ -104,13 +110,41 @@ let getEmotionColor = (emotionLevel) => {
 
 // Start Sim
 let startSim = () => {
-  createPeople(6);
+  createPeople(20);
   getAllDistances();
   drawPeople();
   actionQueue();
+  updateRequest = requestAnimationFrame(update);
 };
 
 // Queue of Actions
 let actionQueue = () => {
   // currentPeopleArr[2].speak();
+};
+
+let moveAllPeopleRan = () => {
+  currentPeopleArr.forEach((person) => {
+    person.x += getRanNum(-4, 4);
+    person.y += getRanNum(-4, 4);
+  });
+};
+
+let updateRequest;
+
+let update = () => {
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  moveAllPeopleRan();
+  getAllDistances();
+  drawPeople();
+
+  updateRequest = requestAnimationFrame(update);
+};
+
+let stopSim = () => {
+  cancelAnimationFrame(updateRequest);
+};
+
+let clearSim = () => {
+  currentPeopleArr = [];
+  c.clearRect(0, 0, canvas.width, canvas.height);
 };
