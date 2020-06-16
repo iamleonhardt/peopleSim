@@ -10,8 +10,17 @@
     <!-- <link rel="icon" type="image/png" href="https://example.com/favicon.png" /> -->
   </head>
   <body>
-    <div class="button" onClick="{startSim()}">Start Simulation</div>
+    <div id="controls">
+      <div class="button" onClick="{startSim()}">Start Simulation</div>
+      <div class="button" id="button-coral" onClick="{stopSim()}">
+        Stop Simulation
+      </div>
+      <div class="button" id="button-grey" onClick="{clearSim()}">
+        Clear Simulation
+      </div>
+    </div>
     <canvas id="canvas"></canvas>
+    <div id="personDetails">Person Details</div>
   </body>
   <script src="peopleData.js"></script>
   <script src="peopleController.js"></script>

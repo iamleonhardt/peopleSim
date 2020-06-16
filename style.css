@@ -2,6 +2,9 @@ body {
   background-color: linen;
   font-family: roboto, sans-serif;
 }
+#controls {
+  margin-bottom: 8px;
+}
 
 .button {
   display: inline-block;
@@ -11,10 +14,23 @@ body {
   color: #fff;
 }
 
+#button-coral {
+  background-color: coral;
+}
+#button-grey {
+  background-color: lightslategrey;
+}
+
 canvas {
-  /* height: 92vh; */
-  /* width: 98vw; */
   border: black 1px solid;
-  display: block;
-  margin-top: 8px;
+  /* diplay: block; */
+}
+
+#personDetails {
+  height: 90.1vh;
+  width: 400px;
+  display: inline-block;
+  border: black 1px solid;
+  vertical-align: top;
+  padding: 8px;
 }
