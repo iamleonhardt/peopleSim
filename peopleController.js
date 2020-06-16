@@ -1,7 +1,12 @@
 // People Controller
 class Person {
-  constructor(props) {
-    Object.assign(this, props);
+  constructor(name) {
+    this.name = name;
+    this.emotionLevel = getRanNum(-5, 5);
+    this.radius = getRanNum(6, 8);
+    this.x = getRanNum(0 + this.radius, 900);
+    this.y = getRanNum(0 + this.radius, 800);
+    this.color = getEmotionColor(this.emotionLevel);
   }
 
   speak() {
