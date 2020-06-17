@@ -1,9 +1,10 @@
 // Simulator Controller
 let currentPeopleArr = [];
+let ticker = 0;
 
 canvas = document.getElementById("canvas");
 c = canvas.getContext("2d");
-canvas.width = window.innerWidth - 520;
+canvas.width = window.innerWidth - 20;
 canvas.height = window.innerHeight - 70;
 
 let requestAnimationFrame =
@@ -28,8 +29,28 @@ let drawPerson = (person) => {
 
   c.font = "14px Arial";
   c.fillStyle = "darkgrey";
-  c.fillText(person.name, person.x + 20, person.y);
-  c.fillText("e: " + person.emotionLevel, person.x + 20, person.y + 14);
+  c.fillText(person.name, person.x + person.radius + 8, person.y);
+  c.fillText(
+    "e: " + person.emotionLevel,
+    person.x + person.radius + 8,
+    person.y + 14
+  );
+
+  person.chatBubble[0] ? drawChatBubble(person) : null;
+  person.chatTimer === ticker ? person.chatBubble.pop() : null;
+};
+
+let drawChatBubble = (person) => {
+  let text = c.measureText(person.chatBubble);
+  c.fillStyle = "white";
+  c.beginPath();
+  c.fillRect(person.x - 24 - text.width, person.y - 12, text.width + 8, 22);
+  c.stroke();
+  c.fill();
+
+  c.font = "14px Arial";
+  c.fillStyle = "darkgrey";
+  c.fillText(person.chatBubble[0], person.x - 20 - text.width, person.y + 4);
 };
 
 let drawPeople = () => {
@@ -57,7 +78,9 @@ let drawDistance = (person1, person2, distance) => {
 let getDistance = (obj1, obj2) => {
   let a = obj1.x - obj2.x;
   let b = obj1.y - obj2.y;
-  return Math.floor(Math.sqrt(a * a + b * b));
+  let distance = Math.floor(Math.sqrt(a * a + b * b));
+  distance < 150 ? (obj1.awareArr.push(obj2), obj2.awareArr.push(obj1)) : null;
+  return distance;
 };
 
 let getAllDistances = () => {
@@ -110,7 +133,7 @@ let getEmotionColor = (emotionLevel) => {
 
 // Start Sim
 let startSim = () => {
-  createPeople(20);
+  createPeople(4);
   getAllDistances();
   drawPeople();
   actionQueue();
@@ -124,8 +147,8 @@ let actionQueue = () => {
 
 let moveAllPeopleRan = () => {
   currentPeopleArr.forEach((person) => {
-    person.x += getRanNum(-4, 4);
-    person.y += getRanNum(-4, 4);
+    person.x += getRanNum(-2, 2);
+    person.y += getRanNum(-2, 2);
   });
 };
 
@@ -137,6 +160,7 @@ let update = () => {
   getAllDistances();
   drawPeople();
 
+  ticker++;
   updateRequest = requestAnimationFrame(update);
 };
 
