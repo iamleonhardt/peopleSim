@@ -80,7 +80,6 @@ let drawDistance = (person1, person2, distance) => {
   );
 };
 
-// Tools
 let getDistance = (obj1, obj2) => {
   let a = obj1.x - obj2.x;
   let b = obj1.y - obj2.y;
@@ -129,13 +128,12 @@ let getRanColor = () => {
   return color;
 };
 
-let moveAllPeopleRan = () => {
+let updateAllpeople = () => {
   currentPeopleArr.forEach((person) => {
     person.update();
   });
 };
 
-// Start Sim
 let startSim = () => {
   createPeople(numOfPeopleInput.value);
   getAllDistances();
@@ -166,7 +164,7 @@ let updateSim = () => {
   // Show Person Stats Checkbox
   showPersonStatsInput.checked ? drawPeopleWithStats() : drawPeople();
 
-  moveAllPeopleRan();
+  updateAllpeople();
   ticker++;
   updateRequest = requestAnimationFrame(updateSim);
 };

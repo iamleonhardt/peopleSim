@@ -42,10 +42,7 @@ class Person {
   };
 
   addToAwareness = (newObj) => {
-    // add person to awarenessMap
     let id = newObj.getID();
-
-    // check awareness hasownproperty
     if (!this.awarenessMap.hasOwnProperty(id)) {
       // check if Ive met them, are they in my memory
 
@@ -53,7 +50,6 @@ class Person {
         person: newObj,
         duration: 0,
       };
-      // greet person
     } else {
       this.awarenessMap[id].duration++;
     }
@@ -70,9 +66,6 @@ class Person {
     c.strokeStyle = "#777";
     c.stroke();
     c.fill();
-
-    this.chatTimer === ticker ? this.chatBubble.pop() : null;
-    this.chatBubble[0] ? this.drawChatBubble() : null;
   };
 
   drawSelfStats = () => {
@@ -87,16 +80,23 @@ class Person {
   };
 
   drawChatBubble = () => {
-    let textWidth = c.measureText(this.chatBubble).width;
-    c.fillStyle = "white";
-    c.beginPath();
-    c.fillRect(this.x - 24 - textWidth, this.y - 12, textWidth + 8, 22);
-    c.stroke();
-    c.fill();
+    this.chatBubble.map((text, i) => {
+      let textWidth = c.measureText(this.chatBubble[i]).width;
+      c.fillStyle = "white";
+      c.beginPath();
+      c.fillRect(
+        this.x - 24 - textWidth,
+        this.y - 12 + i * 24,
+        textWidth + 8,
+        22
+      );
+      c.stroke();
+      c.fill();
 
-    c.font = "14px Arial";
-    c.fillStyle = "darkgrey";
-    c.fillText(this.chatBubble[0], this.x - 20 - textWidth, this.y + 4);
+      c.font = "14px Arial";
+      c.fillStyle = "darkgrey";
+      c.fillText(text, this.x - 20 - textWidth, this.y + 4 + i * 24);
+    });
   };
 
   getEmotionColor = (emotionLevel) => {
@@ -133,6 +133,8 @@ class Person {
     if (ticker % (this.resilience * 10) === 0) {
       this.changeEmotionLevel(getRanNum(-1, 1));
     }
+    this.chatTimer === ticker ? this.chatBubble.pop() : null;
+    this.chatBubble[0] ? this.drawChatBubble() : null;
 
     this.greet();
   };
