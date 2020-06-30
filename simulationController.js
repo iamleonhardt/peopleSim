@@ -71,7 +71,7 @@ let drawDistance = (person1, person2, distance) => {
   c.moveTo(person1.x, person1.y);
   c.lineTo(person2.x, person2.y);
   c.stroke();
-  c.font = "10px Arial";
+  c.font = "15px Arial";
   c.fillStyle = "#fff";
   c.fillText(
     distance,
@@ -88,9 +88,15 @@ let getDistance = (obj1, obj2) => {
   // make hitbox bigger than awareness to narrow it down
 
   let distance = Math.floor(Math.sqrt(a * a + b * b));
-  distance < 150
-    ? (obj1.addToAwareness(obj2), obj2.addToAwareness(obj1))
-    : null;
+  if (distance < 180) {
+    if (distance < 150) {
+      obj1.addToAwareness(obj2);
+      obj2.addToAwareness(obj1);
+    } else {
+      obj1.removeFromAwareness(obj2.id);
+      obj2.removeFromAwareness(obj1.id);
+    }
+  }
   return distance;
 };
 
@@ -134,13 +140,7 @@ let startSim = () => {
   createPeople(numOfPeopleInput.value);
   getAllDistances();
   drawPeople();
-  actionQueue();
-  updateRequest = requestAnimationFrame(update);
-};
-
-// Queue of Actions
-let actionQueue = () => {
-  // currentPeopleArr[2].speak();
+  updateSim();
 };
 
 let stopSim = () => {
@@ -158,23 +158,15 @@ let clearFrame = () => {
 
 let updateRequest;
 
-let update = () => {
-  // Show History Checked
-  // Hide distance
-  // Hide person stats
-  // dont clear frame
+let updateSim = () => {
+  // Show History Checkbox
   !showHistoryInput.checked ? clearFrame() : null;
-
-  moveAllPeopleRan();
-
-  // Show Distances checked
-  // Draw distances, else just get distances
+  // Show Distances checkbox
   drawDistancesInput.checked ? drawAllDistances() : getAllDistances();
-
-  // Show Person Stats Checked
-  // Draw person stats,
+  // Show Person Stats Checkbox
   showPersonStatsInput.checked ? drawPeopleWithStats() : drawPeople();
 
+  moveAllPeopleRan();
   ticker++;
-  updateRequest = requestAnimationFrame(update);
+  updateRequest = requestAnimationFrame(updateSim);
 };
