@@ -1,18 +1,19 @@
 // People Controller
 class Person {
-  constructor(name) {
+  constructor(name, i) {
     this.name = name;
+    this.id = name + "_" + i;
     this.emotionLevel = getRanNum(-5, 5);
-    this.radius = getRanNum(25, 35);
-    this.x = getRanNum(0 + this.radius, 900);
-    this.y = getRanNum(0 + this.radius, 800);
-    this.color = getEmotionColor(this.emotionLevel);
+    this.radius = getRanNum(5, 10);
+    this.x = getRanNum(0 + this.radius, canvas.width);
+    this.y = getRanNum(0 + this.radius, canvas.height);
+    this.speed = getRanNum(1, 5);
+    this.color = this.getEmotionColor(this.emotionLevel);
     this.chatBubble = [];
     this.chatTimer = 0;
-    this.awareArr = [];
-  }
-  greet(target) {
-    speak("hello, ", target.name);
+    this.awarenessMap = {};
+    this.longTermAwarenss = {};
+    this.resilience = getRanNum(1, 15);
   }
 
   speak(message) {
@@ -20,9 +21,115 @@ class Person {
     this.chatTimer = ticker + 160;
   }
 
+  greet() {
+    Object.keys(this.awarenessMap).forEach((person) => {
+      // console.log(this.awarenessMap[person].person.name);
+      this.awarenessMap[person].duration === 5
+        ? this.speak("Hello, " + this.awarenessMap[person].person.name)
+        : null;
+    });
+  }
+
   changeEmotionLevel = (diff) => {
     this.emotionLevel += diff;
     this.emotionLevel > 5 ? (this.emotionLevel = 5) : null;
     this.emotionLevel < -5 ? (this.emotionLevel = -5) : null;
+  };
+
+  getID = () => {
+    return this.id;
+  };
+
+  addToAwareness = (newObj) => {
+    // add person to awarenessMap
+    let id = newObj.getID();
+
+    // check awareness hasownproperty
+    if (!this.awarenessMap.hasOwnProperty(id)) {
+      // check if Ive met them, are they in my memory
+
+      this.awarenessMap[id] = {
+        person: newObj,
+        duration: 0, // increment with ticker?
+      };
+      // greet person
+    } else {
+      this.awarenessMap[id].duration++;
+      // are they still there
+    }
+  };
+
+  drawSelf = () => {
+    c.fillStyle = this.getEmotionColor(this.emotionLevel);
+    c.beginPath();
+    c.arc(this.x, this.y, this.radius, 0, 360);
+    c.strokeStyle = "#777";
+    c.stroke();
+    c.fill();
+
+    this.chatBubble[0] ? this.drawChatBubble() : null;
+    this.chatTimer === ticker ? this.chatBubble.pop() : null;
+  };
+
+  drawSelfStats = () => {
+    c.font = "14px Arial";
+    c.fillStyle = "darkgrey";
+    c.fillText(this.name, this.x + this.radius + 8, this.y);
+    c.fillText(
+      "e: " + this.emotionLevel,
+      this.x + this.radius + 8,
+      this.y + 14
+    );
+  };
+
+  drawChatBubble = () => {
+    let text = c.measureText(this.chatBubble);
+    c.fillStyle = "white";
+    c.beginPath();
+    c.fillRect(this.x - 24 - text.width, this.y - 12, text.width + 8, 22);
+    c.stroke();
+    c.fill();
+
+    c.font = "14px Arial";
+    c.fillStyle = "darkgrey";
+    c.fillText(this.chatBubble[0], this.x - 20 - text.width, this.y + 4);
+  };
+
+  getEmotionColor = (emotionLevel) => {
+    switch (emotionLevel) {
+      case 5:
+        return "#66af2e";
+      case 4:
+        return "#82b230";
+      case 3:
+        return "#a1b235";
+      case 2:
+        return "#bdb336";
+      case 1:
+        return "#dbb53a";
+      case 0:
+        return "#f8b63e";
+      case -1:
+        return "#f6a13e";
+      case -2:
+        return "#f1893f";
+      case -3:
+        return "#ec723c";
+      case -4:
+        return "#ea603c";
+      case -5:
+        return "#e6483d";
+    }
+  };
+
+  update = () => {
+    this.x += getRanNum(-1, 1) * this.speed;
+    this.y += getRanNum(-1, 1) * this.speed;
+
+    if (ticker % (this.resilience * 10) === 0) {
+      this.changeEmotionLevel(getRanNum(-1, 1));
+    }
+
+    this.greet();
   };
 }

@@ -2,10 +2,42 @@
 let currentPeopleArr = [];
 let ticker = 0;
 
+// Inputs
+let numOfPeopleInput = document.getElementById("numOfPeopleInput");
+let showHistoryInput = document.getElementById("showHistoryInput");
+let showPersonStatsInput = document.getElementById("showPersonStatsInput");
+let drawDistancesInput = document.getElementById("drawDistancesInput");
+
+numOfPeopleInput.addEventListener("keyup", (e) => {
+  e.which === 13
+    ? (event.preventDefault(), document.getElementById("startSimBtn").click())
+    : null;
+});
+
+let showHistoryInputClicked = () => {
+  if (showHistoryInput.checked) {
+    showPersonStatsInput.disabled = true;
+    drawDistancesInput.disabled = true;
+    showPersonStatsInput.checked = false;
+    drawDistancesInput.checked = false;
+  } else {
+    showPersonStatsInput.disabled = false;
+    drawDistancesInput.disabled = false;
+  }
+};
+
+// Setup Canvas
 canvas = document.getElementById("canvas");
 c = canvas.getContext("2d");
 canvas.width = window.innerWidth - 20;
 canvas.height = window.innerHeight - 70;
+
+// Resize Canvas when browser resizes
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth - 20;
+  canvas.height = window.innerHeight - 70;
+  console.log("resizing");
+});
 
 let requestAnimationFrame =
   window.requestAnimationFrame ||
@@ -15,58 +47,32 @@ let requestAnimationFrame =
 
 let createPeople = (numberOfPeople) => {
   for (i = 0; i < numberOfPeople; i++) {
-    currentPeopleArr.push(new Person(peopleArr[i]));
+    currentPeopleArr.push(new Person(peopleArr[i], i));
     console.log(peopleArr[i] + " says 'hi' 🙋‍♂️");
   }
 };
 
-let drawPerson = (person) => {
-  c.fillStyle = person.color;
-  c.beginPath();
-  c.arc(person.x, person.y, person.radius, 0, 360);
-  c.stroke();
-  c.fill();
-
-  c.font = "14px Arial";
-  c.fillStyle = "darkgrey";
-  c.fillText(person.name, person.x + person.radius + 8, person.y);
-  c.fillText(
-    "e: " + person.emotionLevel,
-    person.x + person.radius + 8,
-    person.y + 14
-  );
-
-  person.chatBubble[0] ? drawChatBubble(person) : null;
-  person.chatTimer === ticker ? person.chatBubble.pop() : null;
-};
-
-let drawChatBubble = (person) => {
-  let text = c.measureText(person.chatBubble);
-  c.fillStyle = "white";
-  c.beginPath();
-  c.fillRect(person.x - 24 - text.width, person.y - 12, text.width + 8, 22);
-  c.stroke();
-  c.fill();
-
-  c.font = "14px Arial";
-  c.fillStyle = "darkgrey";
-  c.fillText(person.chatBubble[0], person.x - 20 - text.width, person.y + 4);
-};
-
 let drawPeople = () => {
   currentPeopleArr.forEach((person) => {
-    drawPerson(person);
+    person.drawSelf();
+  });
+};
+
+let drawPeopleWithStats = () => {
+  currentPeopleArr.forEach((person) => {
+    person.drawSelf();
+    person.drawSelfStats();
   });
 };
 
 let drawDistance = (person1, person2, distance) => {
-  c.strokeStyle = "#e3e3e3";
+  c.strokeStyle = "#444";
   c.beginPath();
   c.moveTo(person1.x, person1.y);
   c.lineTo(person2.x, person2.y);
   c.stroke();
   c.font = "10px Arial";
-  c.fillStyle = "darkgrey";
+  c.fillStyle = "#fff";
   c.fillText(
     distance,
     (person1.x + person2.x) / 2,
@@ -78,15 +84,28 @@ let drawDistance = (person1, person2, distance) => {
 let getDistance = (obj1, obj2) => {
   let a = obj1.x - obj2.x;
   let b = obj1.y - obj2.y;
+  // check a and b if over a set value, then run the check - within hitbox range
+  // make hitbox bigger than awareness to narrow it down
+
   let distance = Math.floor(Math.sqrt(a * a + b * b));
-  distance < 150 ? (obj1.awareArr.push(obj2), obj2.awareArr.push(obj1)) : null;
+  distance < 150
+    ? (obj1.addToAwareness(obj2), obj2.addToAwareness(obj1))
+    : null;
   return distance;
+};
+
+let drawAllDistances = () => {
+  currentPeopleArr.forEach((self, i) => {
+    currentPeopleArr.forEach((obj2, j) => {
+      j > i ? drawDistance(self, obj2, getDistance(self, obj2)) : null;
+    });
+  });
 };
 
 let getAllDistances = () => {
   currentPeopleArr.forEach((self, i) => {
     currentPeopleArr.forEach((obj2, j) => {
-      j > i ? drawDistance(self, obj2, getDistance(self, obj2)) : null;
+      j > i ? getDistance(self, obj2) : null;
     });
   });
 };
@@ -104,36 +123,15 @@ let getRanColor = () => {
   return color;
 };
 
-let getEmotionColor = (emotionLevel) => {
-  switch (emotionLevel) {
-    case 5:
-      return "#66af2e";
-    case 4:
-      return "#82b230";
-    case 3:
-      return "#a1b235";
-    case 2:
-      return "#bdb336";
-    case 1:
-      return "#dbb53a";
-    case 0:
-      return "#f8b63e";
-    case -1:
-      return "#f6a13e";
-    case -2:
-      return "#f1893f";
-    case -3:
-      return "#ec723c";
-    case -4:
-      return "#ea603c";
-    case -5:
-      return "#e6483d";
-  }
+let moveAllPeopleRan = () => {
+  currentPeopleArr.forEach((person) => {
+    person.update();
+  });
 };
 
 // Start Sim
 let startSim = () => {
-  createPeople(4);
+  createPeople(numOfPeopleInput.value);
   getAllDistances();
   drawPeople();
   actionQueue();
@@ -145,25 +143,6 @@ let actionQueue = () => {
   // currentPeopleArr[2].speak();
 };
 
-let moveAllPeopleRan = () => {
-  currentPeopleArr.forEach((person) => {
-    person.x += getRanNum(-2, 2);
-    person.y += getRanNum(-2, 2);
-  });
-};
-
-let updateRequest;
-
-let update = () => {
-  c.clearRect(0, 0, canvas.width, canvas.height);
-  moveAllPeopleRan();
-  getAllDistances();
-  drawPeople();
-
-  ticker++;
-  updateRequest = requestAnimationFrame(update);
-};
-
 let stopSim = () => {
   cancelAnimationFrame(updateRequest);
 };
@@ -171,4 +150,31 @@ let stopSim = () => {
 let clearSim = () => {
   currentPeopleArr = [];
   c.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+let clearFrame = () => {
+  c.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+let updateRequest;
+
+let update = () => {
+  // Show History Checked
+  // Hide distance
+  // Hide person stats
+  // dont clear frame
+  !showHistoryInput.checked ? clearFrame() : null;
+
+  moveAllPeopleRan();
+
+  // Show Distances checked
+  // Draw distances, else just get distances
+  drawDistancesInput.checked ? drawAllDistances() : getAllDistances();
+
+  // Show Person Stats Checked
+  // Draw person stats,
+  showPersonStatsInput.checked ? drawPeopleWithStats() : drawPeople();
+
+  ticker++;
+  updateRequest = requestAnimationFrame(update);
 };

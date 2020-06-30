@@ -1,24 +1,33 @@
 body {
-  background-color: linen;
+  background-color: #333;
   font-family: roboto, sans-serif;
 }
 #controls {
   margin-bottom: 8px;
 }
 
+input {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+label {
+  color: #fff;
+}
+
 .button {
   display: inline-block;
   padding: 8px;
-  background-color: steelblue;
+  background-color: #82b230;
   border-radius: 4px;
   color: #fff;
 }
 
-#button-coral {
-  background-color: coral;
+#button-2 {
+  background-color: #999;
 }
-#button-grey {
-  background-color: lightslategrey;
+#button-3 {
+  background-color: #bbb;
 }
 
 canvas {
