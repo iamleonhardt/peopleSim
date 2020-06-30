@@ -1,6 +1,7 @@
 // People Controller
 class Person {
   constructor(name, i) {
+    this.socialDistance = 150;
     this.name = name;
     this.id = name + "_" + i;
     this.emotionLevel = getRanNum(-5, 5);
@@ -50,13 +51,16 @@ class Person {
 
       this.awarenessMap[id] = {
         person: newObj,
-        duration: 0, // increment with ticker?
+        duration: 0,
       };
       // greet person
     } else {
       this.awarenessMap[id].duration++;
-      // are they still there
     }
+  };
+
+  removeFromAwareness = (personid) => {
+    delete this.awarenessMap[personid];
   };
 
   drawSelf = () => {
@@ -67,8 +71,8 @@ class Person {
     c.stroke();
     c.fill();
 
-    this.chatBubble[0] ? this.drawChatBubble() : null;
     this.chatTimer === ticker ? this.chatBubble.pop() : null;
+    this.chatBubble[0] ? this.drawChatBubble() : null;
   };
 
   drawSelfStats = () => {
@@ -83,16 +87,16 @@ class Person {
   };
 
   drawChatBubble = () => {
-    let text = c.measureText(this.chatBubble);
+    let textWidth = c.measureText(this.chatBubble).width;
     c.fillStyle = "white";
     c.beginPath();
-    c.fillRect(this.x - 24 - text.width, this.y - 12, text.width + 8, 22);
+    c.fillRect(this.x - 24 - textWidth, this.y - 12, textWidth + 8, 22);
     c.stroke();
     c.fill();
 
     c.font = "14px Arial";
     c.fillStyle = "darkgrey";
-    c.fillText(this.chatBubble[0], this.x - 20 - text.width, this.y + 4);
+    c.fillText(this.chatBubble[0], this.x - 20 - textWidth, this.y + 4);
   };
 
   getEmotionColor = (emotionLevel) => {
