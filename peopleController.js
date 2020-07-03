@@ -10,23 +10,30 @@ class Person {
     this.y = getRanNum(0 + this.radius, canvas.height);
     this.speed = getRanNum(1, 5);
     this.color = this.getEmotionColor(this.emotionLevel);
-    this.chatBubble = [];
+    this.speakArr = []; // {words: "string", removeTime: num}
     this.chatTimer = 0;
     this.awarenessMap = {};
     this.longTermAwarenss = {};
     this.resilience = getRanNum(1, 15);
   }
 
-  speak(message) {
-    this.chatBubble.push(message);
-    this.chatTimer = ticker + 160;
+  speak() {
+    this.speakArr.map((msgObj, i) => {
+      ticker === msgObj.removeTime
+        ? this.speakArr.splice(i, 1)
+        : this.drawSpeechBubble(msgObj.words, i);
+    });
   }
 
   greet() {
-    Object.keys(this.awarenessMap).forEach((person) => {
-      // console.log(this.awarenessMap[person].person.name);
-      this.awarenessMap[person].duration === 5
-        ? this.speak("Hello, " + this.awarenessMap[person].person.name)
+    Object.keys(this.awarenessMap).forEach((personId) => {
+      let greetMessage = "Hello, " + this.awarenessMap[personId].person.name;
+
+      this.awarenessMap[personId].duration === 5
+        ? this.speakArr.unshift({
+            words: greetMessage,
+            removeTime: ticker + 160,
+          })
         : null;
     });
   }
@@ -79,24 +86,22 @@ class Person {
     );
   };
 
-  drawChatBubble = () => {
-    this.chatBubble.map((text, i) => {
-      let textWidth = c.measureText(this.chatBubble[i]).width;
-      c.fillStyle = "white";
-      c.beginPath();
-      c.fillRect(
-        this.x - 24 - textWidth,
-        this.y - 12 + i * 24,
-        textWidth + 8,
-        22
-      );
-      c.stroke();
-      c.fill();
+  drawSpeechBubble = (text, i) => {
+    let textWidth = c.measureText(text).width;
+    c.fillStyle = "white";
+    c.beginPath();
+    c.fillRect(
+      this.x - 24 - textWidth,
+      this.y - 12 + i * 24,
+      textWidth + 8,
+      22
+    );
+    c.stroke();
+    c.fill();
 
-      c.font = "14px Arial";
-      c.fillStyle = "darkgrey";
-      c.fillText(text, this.x - 20 - textWidth, this.y + 4 + i * 24);
-    });
+    c.font = "14px Arial";
+    c.fillStyle = "darkgrey";
+    c.fillText(text, this.x - 20 - textWidth, this.y + 4 + i * 24);
   };
 
   getEmotionColor = (emotionLevel) => {
@@ -133,8 +138,8 @@ class Person {
     if (ticker % (this.resilience * 10) === 0) {
       this.changeEmotionLevel(getRanNum(-1, 1));
     }
-    this.chatTimer === ticker ? this.chatBubble.pop() : null;
-    this.chatBubble[0] ? this.drawChatBubble() : null;
+    this.speak();
+    // this.speakArr[0] ? this.drawSpeechBubble() : null;
 
     this.greet();
   };

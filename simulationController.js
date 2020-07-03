@@ -1,6 +1,7 @@
 // Simulator Controller
 let currentPeopleArr = [];
 let ticker = 0;
+let updateRequest;
 
 // Inputs
 let numOfPeopleInput = document.getElementById("numOfPeopleInput");
@@ -8,6 +9,7 @@ let showHistoryInput = document.getElementById("showHistoryInput");
 let showPersonStatsInput = document.getElementById("showPersonStatsInput");
 let drawDistancesInput = document.getElementById("drawDistancesInput");
 
+// Event Handlers
 numOfPeopleInput.addEventListener("keyup", (e) => {
   e.which === 13
     ? (event.preventDefault(), document.getElementById("startSimBtn").click())
@@ -65,21 +67,6 @@ let drawPeopleWithStats = () => {
   });
 };
 
-let drawDistance = (person1, person2, distance) => {
-  c.strokeStyle = "#444";
-  c.beginPath();
-  c.moveTo(person1.x, person1.y);
-  c.lineTo(person2.x, person2.y);
-  c.stroke();
-  c.font = "15px Arial";
-  c.fillStyle = "#fff";
-  c.fillText(
-    distance,
-    (person1.x + person2.x) / 2,
-    (person1.y + person2.y) / 2
-  );
-};
-
 let getDistance = (obj1, obj2) => {
   let a = obj1.x - obj2.x;
   let b = obj1.y - obj2.y;
@@ -99,18 +86,33 @@ let getDistance = (obj1, obj2) => {
   return distance;
 };
 
-let drawAllDistances = () => {
-  currentPeopleArr.forEach((self, i) => {
-    currentPeopleArr.forEach((obj2, j) => {
-      j > i ? drawDistance(self, obj2, getDistance(self, obj2)) : null;
-    });
-  });
-};
-
 let getAllDistances = () => {
   currentPeopleArr.forEach((self, i) => {
     currentPeopleArr.forEach((obj2, j) => {
       j > i ? getDistance(self, obj2) : null;
+    });
+  });
+};
+
+let drawDistance = (person1, person2, distance) => {
+  c.strokeStyle = "#444";
+  c.beginPath();
+  c.moveTo(person1.x, person1.y);
+  c.lineTo(person2.x, person2.y);
+  c.stroke();
+  c.font = "15px Arial";
+  c.fillStyle = "#fff";
+  c.fillText(
+    distance,
+    (person1.x + person2.x) / 2,
+    (person1.y + person2.y) / 2
+  );
+};
+
+let drawAllDistances = () => {
+  currentPeopleArr.forEach((self, i) => {
+    currentPeopleArr.forEach((obj2, j) => {
+      j > i ? drawDistance(self, obj2, getDistance(self, obj2)) : null;
     });
   });
 };
@@ -126,12 +128,6 @@ let getRanColor = () => {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
-};
-
-let updateAllpeople = () => {
-  currentPeopleArr.forEach((person) => {
-    person.update();
-  });
 };
 
 let startSim = () => {
@@ -154,8 +150,6 @@ let clearFrame = () => {
   c.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-let updateRequest;
-
 let updateSim = () => {
   // Show History Checkbox
   !showHistoryInput.checked ? clearFrame() : null;
@@ -163,8 +157,11 @@ let updateSim = () => {
   drawDistancesInput.checked ? drawAllDistances() : getAllDistances();
   // Show Person Stats Checkbox
   showPersonStatsInput.checked ? drawPeopleWithStats() : drawPeople();
+  //Update All People
+  currentPeopleArr.forEach((person) => {
+    person.update();
+  });
 
-  updateAllpeople();
   ticker++;
   updateRequest = requestAnimationFrame(updateSim);
 };
