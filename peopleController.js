@@ -1,4 +1,3 @@
-// People Controller
 class Person {
   constructor(name, i) {
     this.socialDistance = 150;
@@ -17,29 +16,9 @@ class Person {
     this.resilience = getRanNum(1, 15);
   }
 
-  speak() {
-    this.speakArr.map((msgObj, i) => {
-      ticker === msgObj.removeTime
-        ? this.speakArr.splice(i, 1)
-        : this.drawSpeechBubble(msgObj.words, i);
-    });
-  }
-
-  greet() {
-    Object.keys(this.awarenessMap).forEach((personId) => {
-      let greetMessage = "Hello, " + this.awarenessMap[personId].person.name;
-
-      // Just became aware
-      if (this.awarenessMap[personId].durationOfAwareness === 5) {
-        if (this.longTermAwarenessMap[personId].lastAwareTimestamp < 25) {
-          this.speakArr.unshift({
-            words: greetMessage,
-            removeTime: ticker + 160,
-          });
-        }
-      }
-    });
-  }
+  getID = () => {
+    return this.id;
+  };
 
   changeEmotionLevel = (diff) => {
     this.emotionLevel += diff;
@@ -47,25 +26,57 @@ class Person {
     this.emotionLevel < -5 ? (this.emotionLevel = -5) : null;
   };
 
-  getID = () => {
-    return this.id;
+  getEmotionColor = (emotionLevel) => {
+    switch (emotionLevel) {
+      case 5:
+        return "#2DB4E0";
+      case 4:
+        return "#71CCEB";
+      case 3:
+        return "#95D9F0";
+      case 2:
+        return "#B8E5F5";
+      case 1:
+        return "#DCF3FA";
+      //Neutral
+      case 0:
+        return "#fff";
+      case -1:
+        return "#FADBE0";
+      case -2:
+        return "#F5B8C1";
+      case -3:
+        return "#F094A2";
+      case -4:
+        return "#EB7083";
+      case -5:
+        return "#E12D48";
+    }
   };
 
-  addToAwareness = (personObj) => {
+  // AWARENESS
+  addToAwarenessMap = (personObj) => {
+    this.awarenessMap[personObj.getID()] = {
+      durationOfAwareness: 0,
+      person: personObj,
+    };
+  };
+
+  addToLongTermAwarenessMap = (personObj) => {
+    this.longTermAwarenessMap[personObj.getID()] = {
+      lastAwareTimestamp: 0,
+      person: personObj,
+    };
+  };
+
+  awareOfNewPerson = (personObj) => {
     let id = personObj.getID();
+    // If not in awarenessMap, add them
     if (!this.awarenessMap.hasOwnProperty(id)) {
-      // Add to awareness
-      this.awarenessMap[id] = {
-        durationOfAwareness: 0,
-        person: personObj,
-      };
+      this.addToAwarenessMap(personObj);
       // If not in longTermAwareness, add them
       if (!this.longTermAwarenessMap.hasOwnProperty(id)) {
-        // Add to longTermAwareness
-        this.longTermAwarenessMap[id] = {
-          lastAwareTimestamp: 0,
-          person: personObj,
-        };
+        this.addToLongTermAwarenessMap(personObj);
       } else {
         // If in longTermAwareness, set lastAwareTime to 0
         this.longTermAwarenessMap[id].lastAwareTimestamp = 0;
@@ -85,6 +96,7 @@ class Person {
       : null;
   };
 
+  // DRAW CANVAS ELEMENTS
   drawSelf = () => {
     c.fillStyle = this.getEmotionColor(this.emotionLevel);
     c.beginPath();
@@ -124,33 +136,29 @@ class Person {
     c.fillText(text, this.x - 20 - textWidth, this.y + 4 + i * 24);
   };
 
-  getEmotionColor = (emotionLevel) => {
-    switch (emotionLevel) {
-      case 5:
-        return "#2DB4E0";
-      case 4:
-        return "#71CCEB";
-      case 3:
-        return "#95D9F0";
-      case 2:
-        return "#B8E5F5";
-      case 1:
-        return "#DCF3FA";
-      //Neutral
-      case 0:
-        return "#fff";
-      case -1:
-        return "#FADBE0";
-      case -2:
-        return "#F5B8C1";
-      case -3:
-        return "#F094A2";
-      case -4:
-        return "#EB7083";
-      case -5:
-        return "#E12D48";
-    }
-  };
+  speak() {
+    this.speakArr.map((msgObj, i) => {
+      ticker === msgObj.removeTime
+        ? this.speakArr.splice(i, 1)
+        : this.drawSpeechBubble(msgObj.words, i);
+    });
+  }
+
+  greet() {
+    Object.keys(this.awarenessMap).forEach((personId) => {
+      let greetMessage = "Hello, " + this.awarenessMap[personId].person.name;
+
+      // Just became aware
+      if (this.awarenessMap[personId].durationOfAwareness === 5) {
+        if (this.longTermAwarenessMap[personId].lastAwareTimestamp < 25) {
+          this.speakArr.unshift({
+            words: greetMessage,
+            removeTime: ticker + 160,
+          });
+        }
+      }
+    });
+  }
 
   update = () => {
     this.x += getRanNum(-1, 1) * this.speed;

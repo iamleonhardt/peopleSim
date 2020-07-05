@@ -1,17 +1,22 @@
-// Simulator Controller
 let currentPeopleArr = [];
 let ticker = 0;
 let updateRequest;
 let selectedPeopleMap = {};
 
-// Inputs
+let requestAnimationFrame =
+  window.requestAnimationFrame ||
+  window.mozRequestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||
+  window.msRequestAnimationFrame;
+
+// Define Inputs
 let numOfPeopleInput = document.getElementById("numOfPeopleInput");
 let showHistoryInput = document.getElementById("showHistoryInput");
 let showPersonStatsInput = document.getElementById("showPersonStatsInput");
 let drawDistancesInput = document.getElementById("drawDistancesInput");
 let detailsInput = document.getElementById("detailsSidePane");
 
-// Event Handlers
+// EVENT HANDLERS
 numOfPeopleInput.addEventListener("keyup", (e) => {
   e.which === 13
     ? (event.preventDefault(), document.getElementById("startSimBtn").click())
@@ -30,7 +35,7 @@ let showHistoryInputClicked = () => {
   }
 };
 
-// Setup Canvas
+// CANVAS SETUP
 canvas = document.getElementById("canvas");
 c = canvas.getContext("2d");
 canvas.width = window.innerWidth;
@@ -53,12 +58,21 @@ let resizeCanvas = () => {
   }
 };
 
-let requestAnimationFrame =
-  window.requestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.msRequestAnimationFrame;
+// TOOLS
+let getRanNum = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
 
+let getRanColor = () => {
+  let letters = "0123456789ABCDEF";
+  let color = "#";
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+// PEOPLE CREATION
 let createPeople = (numberOfPeople) => {
   for (i = 0; i < numberOfPeople; i++) {
     currentPeopleArr.push(new Person(peopleArr[i], i));
@@ -79,6 +93,7 @@ let drawPeopleWithStats = () => {
   });
 };
 
+// DISTANCES
 let getDistance = (obj1, obj2) => {
   let a = obj1.x - obj2.x;
   let b = obj1.y - obj2.y;
@@ -88,8 +103,8 @@ let getDistance = (obj1, obj2) => {
   let distance = Math.floor(Math.sqrt(a * a + b * b));
   if (distance < 180) {
     if (distance < 150) {
-      obj1.addToAwareness(obj2);
-      obj2.addToAwareness(obj1);
+      obj1.awareOfNewPerson(obj2);
+      obj2.awareOfNewPerson(obj1);
     } else {
       obj1.removeFromAwareness(obj2.id);
       obj2.removeFromAwareness(obj1.id);
@@ -129,19 +144,7 @@ let drawAllDistances = () => {
   });
 };
 
-let getRanNum = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
-let getRanColor = () => {
-  let letters = "0123456789ABCDEF";
-  let color = "#";
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
+// SIM CONTROLS
 let startSim = () => {
   createPeople(numOfPeopleInput.value);
   updateSim();
