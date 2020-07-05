@@ -35,11 +35,15 @@
         id="showHistoryInput"
         onClick="(showHistoryInputClicked())"
       />
-      <label class="toggle" for="showHistoryInput">History </label>
+      <label for="showHistoryInput">History</label>
       <input type="checkbox" id="showPersonStatsInput" />
-      <label class="toggle" for="showPersonStatsInput">Person Stats </label>
+      <label for="showPersonStatsInput">Details</label>
       <input type="checkbox" id="drawDistancesInput" />
-      <label class="toggle" for="drawDistancesInput">Distances </label>
+      <label for="drawDistancesInput">Distances</label>
+      <input type="checkbox" id="detailsSidePane" onClick="resizeCanvas()" />
+      <label for="detailsSidePane">
+        <i class="feather-16" data-feather="sidebar"></i>
+      </label>
     </div>
     <canvas id="canvas"></canvas>
     <!-- <div id="personDetails">Person Details</div> -->

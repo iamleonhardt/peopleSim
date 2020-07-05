@@ -9,6 +9,7 @@ let numOfPeopleInput = document.getElementById("numOfPeopleInput");
 let showHistoryInput = document.getElementById("showHistoryInput");
 let showPersonStatsInput = document.getElementById("showPersonStatsInput");
 let drawDistancesInput = document.getElementById("drawDistancesInput");
+let detailsInput = document.getElementById("detailsSidePane");
 
 // Event Handlers
 numOfPeopleInput.addEventListener("keyup", (e) => {
@@ -41,6 +42,16 @@ window.addEventListener("resize", () => {
   canvas.height = window.innerHeight - 66;
   console.log("resizing");
 });
+
+let resizeCanvas = () => {
+  if (detailsInput.checked) {
+    canvas.width = window.innerWidth - 400;
+    console.log("resizing");
+  } else {
+    canvas.width = window.innerWidth;
+    console.log("resizing");
+  }
+};
 
 let requestAnimationFrame =
   window.requestAnimationFrame ||
