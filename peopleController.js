@@ -12,8 +12,8 @@ class Person {
     this.color = this.getEmotionColor(this.emotionLevel);
     this.speakArr = []; // {words: "string", removeTime: num}
     this.chatTimer = 0;
-    this.awarenessMap = {};
-    this.longTermAwarenss = {};
+    this.awarenessMap = {}; // {personId : {durationOfAwareness: num of how long im aware of them, person: personObj}}
+    this.longTermAwarenessMap = {}; // {personId: {lastAwareTimestamp: num, person: personObj}}
     this.resilience = getRanNum(1, 15);
   }
 
@@ -29,12 +29,15 @@ class Person {
     Object.keys(this.awarenessMap).forEach((personId) => {
       let greetMessage = "Hello, " + this.awarenessMap[personId].person.name;
 
-      this.awarenessMap[personId].duration === 5
-        ? this.speakArr.unshift({
+      // Just became aware
+      if (this.awarenessMap[personId].durationOfAwareness === 5) {
+        if (this.longTermAwarenessMap[personId].lastAwareTimestamp < 25) {
+          this.speakArr.unshift({
             words: greetMessage,
             removeTime: ticker + 160,
-          })
-        : null;
+          });
+        }
+      }
     });
   }
 
@@ -48,36 +51,53 @@ class Person {
     return this.id;
   };
 
-  addToAwareness = (newObj) => {
-    let id = newObj.getID();
+  addToAwareness = (personObj) => {
+    let id = personObj.getID();
     if (!this.awarenessMap.hasOwnProperty(id)) {
-      // check if Ive met them, are they in my memory
-
+      // Add to awareness
       this.awarenessMap[id] = {
-        person: newObj,
-        duration: 0,
+        durationOfAwareness: 0,
+        person: personObj,
       };
+      // If not in longTermAwareness, add them
+      if (!this.longTermAwarenessMap.hasOwnProperty(id)) {
+        // Add to longTermAwareness
+        this.longTermAwarenessMap[id] = {
+          lastAwareTimestamp: 0,
+          person: personObj,
+        };
+      } else {
+        // If in longTermAwareness, set lastAwareTime to 0
+        this.longTermAwarenessMap[id].lastAwareTimestamp = 0;
+      }
     } else {
-      this.awarenessMap[id].duration++;
+      this.awarenessMap[id].durationOfAwareness++;
     }
   };
 
   removeFromAwareness = (personid) => {
-    delete this.awarenessMap[personid];
+    this.awarenessMap.hasOwnProperty(personid)
+      ? delete this.awarenessMap[personid]
+      : null;
+
+    this.longTermAwarenessMap.hasOwnProperty(personid)
+      ? (this.longTermAwarenessMap[personid].lastAwareTimestamp = ticker)
+      : null;
   };
 
   drawSelf = () => {
     c.fillStyle = this.getEmotionColor(this.emotionLevel);
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, 360);
-    c.strokeStyle = "#777";
+    c.strokeStyle = "#999";
     c.stroke();
     c.fill();
   };
 
   drawSelfStats = () => {
+    c.beginPath();
     c.font = "14px Arial";
-    c.fillStyle = "darkgrey";
+    c.fillStyle = "#999";
     c.fillText(this.name, this.x + this.radius + 8, this.y);
     c.fillText(
       "e: " + this.emotionLevel,
@@ -107,27 +127,28 @@ class Person {
   getEmotionColor = (emotionLevel) => {
     switch (emotionLevel) {
       case 5:
-        return "#66af2e";
+        return "#2DB4E0";
       case 4:
-        return "#82b230";
+        return "#71CCEB";
       case 3:
-        return "#a1b235";
+        return "#95D9F0";
       case 2:
-        return "#bdb336";
+        return "#B8E5F5";
       case 1:
-        return "#dbb53a";
+        return "#DCF3FA";
+      //Neutral
       case 0:
-        return "#f8b63e";
+        return "#fff";
       case -1:
-        return "#f6a13e";
+        return "#FADBE0";
       case -2:
-        return "#f1893f";
+        return "#F5B8C1";
       case -3:
-        return "#ec723c";
+        return "#F094A2";
       case -4:
-        return "#ea603c";
+        return "#EB7083";
       case -5:
-        return "#e6483d";
+        return "#E12D48";
     }
   };
 
@@ -139,8 +160,6 @@ class Person {
       this.changeEmotionLevel(getRanNum(-1, 1));
     }
     this.speak();
-    // this.speakArr[0] ? this.drawSpeechBubble() : null;
-
     this.greet();
   };
 }

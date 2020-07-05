@@ -2,6 +2,7 @@
 let currentPeopleArr = [];
 let ticker = 0;
 let updateRequest;
+let selectedPeopleMap = {};
 
 // Inputs
 let numOfPeopleInput = document.getElementById("numOfPeopleInput");
@@ -31,13 +32,13 @@ let showHistoryInputClicked = () => {
 // Setup Canvas
 canvas = document.getElementById("canvas");
 c = canvas.getContext("2d");
-canvas.width = window.innerWidth - 20;
-canvas.height = window.innerHeight - 70;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight - 66;
 
 // Resize Canvas when browser resizes
 window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth - 20;
-  canvas.height = window.innerHeight - 70;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight - 66;
   console.log("resizing");
 });
 
@@ -95,13 +96,13 @@ let getAllDistances = () => {
 };
 
 let drawDistance = (person1, person2, distance) => {
-  c.strokeStyle = "#444";
+  c.strokeStyle = "#d3d3d3";
   c.beginPath();
   c.moveTo(person1.x, person1.y);
   c.lineTo(person2.x, person2.y);
   c.stroke();
-  c.font = "15px Arial";
-  c.fillStyle = "#fff";
+  c.font = "14px Arial";
+  c.fillStyle = "#9e9e9e";
   c.fillText(
     distance,
     (person1.x + person2.x) / 2,
@@ -132,8 +133,6 @@ let getRanColor = () => {
 
 let startSim = () => {
   createPeople(numOfPeopleInput.value);
-  getAllDistances();
-  drawPeople();
   updateSim();
 };
 
@@ -143,7 +142,7 @@ let stopSim = () => {
 
 let clearSim = () => {
   currentPeopleArr = [];
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  clearFrame();
 };
 
 let clearFrame = () => {

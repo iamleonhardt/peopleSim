@@ -7,37 +7,39 @@
     <title>People Simulator</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <!-- <link rel="icon" type="image/png" href="https://example.com/favicon.png" /> -->
+    <script src="https://unpkg.com/feather-icons"></script>
   </head>
   <body>
     <div id="controls">
       <input
         type="number"
+        class="neumorphic neumorphic--pressed"
         id="numOfPeopleInput"
         min="1"
         max="40"
-        value="4"
+        value="6"
         autofocus
       />
-      <div class="button" id="startSimBtn" onClick="{startSim()}">
-        Start Simulation
+      <div class="button neumorphic" id="startSimBtn" onClick="{startSim()}">
+        <i class="feather-16" data-feather="play"></i>
       </div>
-      <div class="button" id="button-2" onClick="{stopSim()}">
-        Stop Simulation
+      <div class="button neumorphic" id="button-2" onClick="{stopSim()}">
+        <i class="feather-16" data-feather="pause"></i>
       </div>
-      <div class="button" id="button-2" onClick="{clearSim()}">
-        Clear Simulation
+      <div class="button neumorphic" id="button-2" onClick="{clearSim()}">
+        <i class="feather-16" data-feather="x"></i>
       </div>
+
       <input
         type="checkbox"
         id="showHistoryInput"
         onClick="(showHistoryInputClicked())"
       />
-      <label for="showHistoryInput">Show History</label>
+      <label class="toggle" for="showHistoryInput">History </label>
       <input type="checkbox" id="showPersonStatsInput" />
-      <label for="showPersonStatsInput">Show Person Stats</label>
+      <label class="toggle" for="showPersonStatsInput">Person Stats </label>
       <input type="checkbox" id="drawDistancesInput" />
-      <label for="drawDistancesInput">Show Distances</label>
+      <label class="toggle" for="drawDistancesInput">Distances </label>
     </div>
     <canvas id="canvas"></canvas>
     <!-- <div id="personDetails">Person Details</div> -->
@@ -45,4 +47,7 @@
   <script src="peopleData.js"></script>
   <script src="peopleController.js"></script>
   <script src="simulationController.js"></script>
+  <script>
+    feather.replace();
+  </script>
 </html>

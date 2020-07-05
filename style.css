@@ -1,37 +1,59 @@
-body {
-  background-color: #333;
-  font-family: roboto, sans-serif;
-}
-#controls {
-  margin-bottom: 8px;
+:root {
+  --bg-color: #ecf0f3;
+
+  /* neumorphic styles*/
+  --h1: 4px;
+  --v1: 4px;
+  --blur1: 8px;
+  --color-dark: #d1d9e6;
+  --h2: -4px;
+  --v2: -4px;
+  --blur2: 8px;
+  --color-light: #fff;
 }
 
-input {
-  padding: 8px;
-  border-radius: 4px;
+body {
+  background-color: var(--bg-color);
+  font-family: roboto, sans-serif;
+  color: #999;
+  margin: 0;
+}
+#controls {
+  margin: 8px 0;
 }
 
 label {
-  color: #fff;
+  /* color: #fff; */
+  vertical-align: middle;
 }
 
 .button {
-  display: inline-block;
-  padding: 8px;
-  background-color: #82b230;
-  border-radius: 4px;
-  color: #fff;
+  vertical-align: middle;
+  user-select: none;
+
+  /* display: inline-block;
+  padding: 1rem;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  margin: 4px;
+  height: 24px;
+  border-radius: 40px;
+  overflow: hidden; */
+  /* color: #fff; */
+
+  /* align-items: center; */
+  /* background-color: #afd275; */
 }
 
 #button-2 {
-  background-color: #999;
+  /* background-color: #999; */
 }
 #button-3 {
-  background-color: #bbb;
+  /* background-color: #bbb; */
 }
 
 canvas {
-  border: black 1px solid;
+  border: #ccc 1px solid;
   /* diplay: block; */
 }
 
@@ -42,4 +64,91 @@ canvas {
   border: black 1px solid;
   vertical-align: top;
   padding: 8px;
+}
+
+.neumorphic {
+  display: inline-block;
+  padding: 12px;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  margin: 4px;
+  height: 14px;
+  border-radius: 40px;
+  overflow: hidden;
+  /* font-size: 5rem; */
+  /* width: 20px; */
+
+  /* padding: 1.3rem; */
+  /* display: flex; */
+  box-shadow: var(--h1) var(--v1) var(--blur1) var(--color-dark),
+    var(--h2) var(--v2) var(--blur2) var(--color-light);
+}
+
+.neumorphic--pressed {
+  box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.2),
+    inset -6px -6px 10px 0 rgba(255, 255, 255, 0.5);
+}
+
+input {
+  border: none;
+  vertical-align: middle;
+  color: #999;
+}
+
+input[type="number"] {
+  padding-left: 20px;
+}
+
+.feather-16 {
+  width: 16px;
+  height: 16px;
+}
+
+.feather-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.feather-32 {
+  width: 32px;
+  height: 32px;
+}
+
+/* Don't show blue border when focused */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}
+
+input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+input[type="checkbox"] + label {
+  user-select: none;
+  display: inline-block;
+  padding: 12px;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  /* margin: 0px; */
+  height: 14px;
+  border-radius: 40px;
+  overflow: hidden;
+  font-size: 14px;
+  /* width: 20px; */
+
+  /* padding: 1.3rem; */
+  /* display: flex; */
+  box-shadow: var(--h1) var(--v1) var(--blur1) var(--color-dark),
+    var(--h2) var(--v2) var(--blur2) var(--color-light);
+  transition: box-shadow 4s ease-in-out;
+}
+
+input[type="checkbox"]:checked + label {
+  box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.2),
+    inset -6px -6px 10px 0 rgba(255, 255, 255, 0.5);
 }
