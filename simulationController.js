@@ -9,53 +9,70 @@ let requestAnimationFrame =
   window.webkitRequestAnimationFrame ||
   window.msRequestAnimationFrame;
 
-// Define Inputs
-let numOfPeopleInput = document.getElementById("numOfPeopleInput");
-let showHistoryInput = document.getElementById("showHistoryInput");
-let showPersonStatsInput = document.getElementById("showPersonStatsInput");
-let drawDistancesInput = document.getElementById("drawDistancesInput");
-let detailsInput = document.getElementById("detailsSidePane");
-
-// EVENT HANDLERS
-numOfPeopleInput.addEventListener("keyup", (e) => {
-  e.which === 13
-    ? (event.preventDefault(), document.getElementById("startSimBtn").click())
-    : null;
-});
-
-let showHistoryInputClicked = () => {
-  if (showHistoryInput.checked) {
-    showPersonStatsInput.disabled = true;
-    drawDistancesInput.disabled = true;
-    showPersonStatsInput.checked = false;
-    drawDistancesInput.checked = false;
-  } else {
-    showPersonStatsInput.disabled = false;
-    drawDistancesInput.disabled = false;
-  }
-};
-
 // CANVAS SETUP
-canvas = document.getElementById("canvas");
-c = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight - 66;
+canvasPeople = document.getElementById("canvasPeople");
+cPeople = canvasPeople.getContext("2d");
+canvasPeople.width = window.innerWidth;
+canvasPeople.height = window.innerHeight - 66;
+
+canvasData = document.getElementById("canvasData");
+cData = canvasData.getContext("2d");
+canvasData.width = window.innerWidth;
+canvasData.height = window.innerHeight - 66;
+
+canvasMeasurements = document.getElementById("canvasMeasurements");
+cMeasurements = canvasMeasurements.getContext("2d");
+canvasMeasurements.width = window.innerWidth;
+canvasMeasurements.height = window.innerHeight - 66;
 
 // Resize Canvas when browser resizes
 window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight - 66;
-  console.log("resizing");
+  canvasPeople.width = window.innerWidth;
+  canvasPeople.height = window.innerHeight - 66;
+  canvasData.width = window.innerWidth;
+  canvasData.height = window.innerHeight - 66;
+  canvasMeasurements.width = window.innerWidth;
+  canvasMeasurements.height = window.innerHeight - 66;
 });
 
+// Resize Canvas when Details Pane opens
 let resizeCanvas = () => {
   if (detailsInput.checked) {
-    canvas.width = window.innerWidth - 400;
-    console.log("resizing");
+    canvasPeople.width = window.innerWidth - 400;
+    canvasData.width = window.innerWidth - 400;
+    canvasMeasurements.width = window.innerWidth - 400;
   } else {
-    canvas.width = window.innerWidth;
-    console.log("resizing");
+    canvasPeople.width = window.innerWidth;
+    canvasData.width = window.innerWidth;
+    canvasMeasurements.width = window.innerWidth;
   }
+};
+
+let showPeopleCount = () => {
+  cMeasurements.font = "14px Arial";
+  cMeasurements.fillStyle = "#9e9e9e";
+  cMeasurements.fillText(
+    "Current People " + currentPeopleArr.length, 8, 24
+  );
+}
+
+let clearPeopleFrame = () => {
+  cPeople.clearRect(0, 0, canvasPeople.width, canvasPeople.height);
+};
+
+let clearDataFrame = () => {
+  cData.clearRect(0, 0, canvasData.width, canvasData.height);
+};
+
+let clearMeasurementsFrame = () => {
+  cMeasurements.clearRect(0, 0, canvasMeasurements.width, canvasMeasurements.height);
+};
+
+let clearFrames = () => {
+  cData.clearRect(0, 0, canvasData.width, canvasData.height);
+  cPeople.clearRect(0, 0, canvasPeople.width, canvasPeople.height);
+  cMeasurements.clearRect(0, 0, canvasMeasurements.width, canvasMeasurements.height);
+
 };
 
 // TOOLS
@@ -76,31 +93,19 @@ let getRanColor = () => {
 let createPeople = (numberOfPeople) => {
   for (i = 0; i < numberOfPeople; i++) {
     currentPeopleArr.push(new Person(peopleArr[i], i));
-    console.log(peopleArr[i] + " says 'hi' 🙋‍♂️");
+    console.log(peopleArr[i] + " was born  🙋‍♂️");
   }
-};
-
-let drawPeople = () => {
-  currentPeopleArr.forEach((person) => {
-    person.drawSelf();
-  });
-};
-
-let drawPeopleWithStats = () => {
-  currentPeopleArr.forEach((person) => {
-    person.drawSelf();
-    person.drawSelfStats();
-  });
 };
 
 // DISTANCES
 let getDistance = (obj1, obj2) => {
-  let a = obj1.x - obj2.x;
-  let b = obj1.y - obj2.y;
+  let a = obj1.pos.x - obj2.pos.x;
+  let b = obj1.pos.y - obj2.pos.y;
   // check a and b if over a set value, then run the check - within hitbox range
   // make hitbox bigger than awareness to narrow it down
 
   let distance = Math.floor(Math.sqrt(a * a + b * b));
+  
   if (distance < 180) {
     if (distance < 150) {
       obj1.awareOfNewPerson(obj2);
@@ -122,17 +127,17 @@ let getAllDistances = () => {
 };
 
 let drawDistance = (person1, person2, distance) => {
-  c.strokeStyle = "#d3d3d3";
-  c.beginPath();
-  c.moveTo(person1.x, person1.y);
-  c.lineTo(person2.x, person2.y);
-  c.stroke();
-  c.font = "14px Arial";
-  c.fillStyle = "#9e9e9e";
-  c.fillText(
+  cMeasurements.strokeStyle = "#e3e3e3";
+  cMeasurements.beginPath();
+  cMeasurements.moveTo(person1.pos.x, person1.pos.y);
+  cMeasurements.lineTo(person2.pos.x, person2.pos.y);
+  cMeasurements.stroke();
+  cMeasurements.font = "14px Arial";
+  cMeasurements.fillStyle = "#9e9e9e";
+  cMeasurements.fillText(
     distance,
-    (person1.x + person2.x) / 2,
-    (person1.y + person2.y) / 2
+    (person1.pos.x + person2.pos.x) / 2,
+    (person1.pos.y + person2.pos.y) / 2
   );
 };
 
@@ -144,32 +149,22 @@ let drawAllDistances = () => {
   });
 };
 
-// SIM CONTROLS
-let startSim = () => {
-  createPeople(numOfPeopleInput.value);
-  updateSim();
-};
+// EVENT HANDLERS
+numOfPeopleInput.addEventListener("keyup", (e) => {
+  e.which === 13
+    ? (event.preventDefault(), document.getElementById("startSimBtn").click())
+    : null;
+});
 
-let stopSim = () => {
-  cancelAnimationFrame(updateRequest);
-};
-
-let clearSim = () => {
-  currentPeopleArr = [];
-  clearFrame();
-};
-
-let clearFrame = () => {
-  c.clearRect(0, 0, canvas.width, canvas.height);
-};
 
 let updateSim = () => {
-  // Show History Checkbox
-  !showHistoryInput.checked ? clearFrame() : null;
-  // Show Distances checkbox
+  !showHistoryInput.checked ? clearFrames() : clearDataFrame(), clearMeasurementsFrame();
+  drawPeople();
   drawDistancesInput.checked ? drawAllDistances() : getAllDistances();
-  // Show Person Stats Checkbox
-  showPersonStatsInput.checked ? drawPeopleWithStats() : drawPeople();
+  showPersonStatsInput.checked ? drawPeopleStats() : null;
+  showAwarenessRangeInput.checked ? drawPeopleAwarenessRange() : null;
+  showPeopleCount();
+
   //Update All People
   currentPeopleArr.forEach((person) => {
     person.update();
@@ -178,3 +173,5 @@ let updateSim = () => {
   ticker++;
   updateRequest = requestAnimationFrame(updateSim);
 };
+
+updateRequest = requestAnimationFrame(updateSim);

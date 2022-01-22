@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
   </head>
   <body>
+
+    <!-- Sim Controls -->
     <div id="controls">
       <input
         type="number"
@@ -17,40 +20,62 @@
         id="numOfPeopleInput"
         min="1"
         max="40"
-        value="6"
+        value="8"
         autofocus
       />
-      <div class="button neumorphic" id="startSimBtn" onClick="{startSim()}">
-        <i class="feather-16" data-feather="play"></i>
-      </div>
-      <div class="button neumorphic" id="button-2" onClick="{stopSim()}">
-        <i class="feather-16" data-feather="pause"></i>
-      </div>
-      <div class="button neumorphic" id="button-2" onClick="{clearSim()}">
-        <i class="feather-16" data-feather="x"></i>
-      </div>
+      <!-- Add People -->
+      <input type="button" class="neumorphic" id="addPeopleBtn" onClick="{addNPCs()}">
+      <label for="addPeopleBtn"><i class="feather-16" data-feather="plus"></i></label>
+      </input>
+      <!-- Start Sim -->
+      <input type="button" class="neumorphic" id="playBtn" onClick="{startSim()}" disabled="true">
+      <label for="playBtn"><i class="feather-16" data-feather="play"></i></label>
+      </input>
+      <!-- Pause Sim -->
+      <input type="button" class="neumorphic" id="pauseBtn" onClick="{stopSim()}">
+      <label for="pauseBtn"> <i class="feather-16" data-feather="pause"></i></label>
+      </input>
+      <!-- Clear Sim -->
+      <input type="button" class="neumorphic" id="clearBtn" onClick="{clearSim()}">
+      <label for="clearBtn"><i class="feather-16" data-feather="x"></i></label>
+      </input>
 
-      <input
-        type="checkbox"
-        id="showHistoryInput"
-        onClick="(showHistoryInputClicked())"
-      />
+      <!-- View Controls -->
+      <!-- History -->
+      <input type="checkbox" id="showHistoryInput" onClick="(showHistoryInputClicked())"/>
       <label for="showHistoryInput">History</label>
+      <!-- Person Stats -->
       <input type="checkbox" id="showPersonStatsInput" />
       <label for="showPersonStatsInput">Details</label>
+      <!-- Distance between people-->
       <input type="checkbox" id="drawDistancesInput" />
       <label for="drawDistancesInput">Distances</label>
+      <!-- Awareness Range -->
+      <input type="checkbox" id="showAwarenessRangeInput" />
+      <label for="showAwarenessRangeInput">Awareness</label>
+
       <input type="checkbox" id="detailsSidePane" onClick="resizeCanvas()" />
       <label for="detailsSidePane">
         <i class="feather-16" data-feather="sidebar"></i>
       </label>
+
     </div>
-    <canvas id="canvas"></canvas>
-    <!-- <div id="personDetails">Person Details</div> -->
+
+    <!-- Canvas Layers -->
+    <canvas class="canvases" id="canvasMeasurements"></canvas>
+    <canvas class="canvases" id="canvasPeople"></canvas>
+    <canvas class="canvases" id="canvasData"></canvas>
+
+
   </body>
+
   <script src="peopleData.js"></script>
-  <script src="peopleController.js"></script>
+  <script src="personController.js"></script>
+  <script src="npcController.js"></script>
+  <script src="pcController.js"></script>
+  <script src="simControls.js"></script>
   <script src="simulationController.js"></script>
+  
   <script>
     feather.replace();
   </script>
