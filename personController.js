@@ -246,7 +246,6 @@ class Person {
     this.vel.y < this.maxSpeed *-1 ? this.vel.y = this.maxSpeed *-1 : null;
 
 
-    console.log("this vel: ", this.vel)
     this.pos.x += this.vel.x;
     this.pos.y += this.vel.y;
     this.acc = {x:0, y: 0};
